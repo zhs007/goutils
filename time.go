@@ -25,6 +25,10 @@ func FormatNow(t ITime) string {
 	return t.Now().In(gUTCLocal).Format("2006-01-02_15:04:05")
 }
 
+func GetCurTimestamp() int64 {
+	return time.Now().Unix()
+}
+
 func init() {
 	gTime = &Time{}
 
