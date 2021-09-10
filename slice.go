@@ -55,18 +55,18 @@ func InsUniqueIntSlice(arr []int, v int) []int {
 	return append(arr, v)
 }
 
-// IntArr2ToInt32Arr - [][]int -> []int32
-func IntArr2ToInt32Arr(arr [][]int) []int32 {
-	arr2 := []int32{}
+// // IntArr2ToInt32Arr - [][]int -> []int32
+// func IntArr2ToInt32Arr(arr [][]int) []int32 {
+// 	arr2 := []int32{}
 
-	for _, arr1 := range arr {
-		for _, v := range arr1 {
-			arr2 = append(arr2, int32(v))
-		}
-	}
+// 	for _, arr1 := range arr {
+// 		for _, v := range arr1 {
+// 			arr2 = append(arr2, int32(v))
+// 		}
+// 	}
 
-	return arr2
-}
+// 	return arr2
+// }
 
 // CloneIntArr2 - clone a [][]int
 func CloneIntArr2(arr [][]int) [][]int {
