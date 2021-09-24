@@ -279,3 +279,47 @@ func Test_GetJsonObjectArr(t *testing.T) {
 
 	t.Logf("Test_GetJsonIntArr OK")
 }
+
+func Test_GetJsonIntArr3(t *testing.T) {
+	arr1, err := GetJsonIntArr3([]byte(`{"abc":[[[1,2,3],[4,5]],[[6,7],[8]]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr1), 2)
+	assert.Equal(t, len(arr1[0]), 2)
+	assert.Equal(t, len(arr1[1]), 2)
+	assert.Equal(t, len(arr1[0][0]), 3)
+	assert.Equal(t, len(arr1[0][1]), 2)
+	assert.Equal(t, len(arr1[1][0]), 2)
+	assert.Equal(t, len(arr1[1][1]), 1)
+	assert.Equal(t, arr1[0][0][0], 1)
+	assert.Equal(t, arr1[0][0][1], 2)
+	assert.Equal(t, arr1[0][0][2], 3)
+	assert.Equal(t, arr1[0][1][0], 4)
+	assert.Equal(t, arr1[0][1][1], 5)
+	assert.Equal(t, arr1[1][0][0], 6)
+	assert.Equal(t, arr1[1][0][1], 7)
+	assert.Equal(t, arr1[1][1][0], 8)
+
+	t.Logf("Test_GetJsonIntArr2 OK")
+}
+
+func Test_GetJsonInt64Arr3(t *testing.T) {
+	arr1, err := GetJsonInt64Arr3([]byte(`{"abc":[[[1,2,3],[4,5]],[[6,7],[8]]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr1), 2)
+	assert.Equal(t, len(arr1[0]), 2)
+	assert.Equal(t, len(arr1[1]), 2)
+	assert.Equal(t, len(arr1[0][0]), 3)
+	assert.Equal(t, len(arr1[0][1]), 2)
+	assert.Equal(t, len(arr1[1][0]), 2)
+	assert.Equal(t, len(arr1[1][1]), 1)
+	assert.Equal(t, arr1[0][0][0], int64(1))
+	assert.Equal(t, arr1[0][0][1], int64(2))
+	assert.Equal(t, arr1[0][0][2], int64(3))
+	assert.Equal(t, arr1[0][1][0], int64(4))
+	assert.Equal(t, arr1[0][1][1], int64(5))
+	assert.Equal(t, arr1[1][0][0], int64(6))
+	assert.Equal(t, arr1[1][0][1], int64(7))
+	assert.Equal(t, arr1[1][1][0], int64(8))
+
+	t.Logf("Test_GetJsonInt64Arr3 OK")
+}

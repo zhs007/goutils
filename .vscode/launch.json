@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/json_test.go",
             "args": [
                 "-test.run",
-                "Test_GetJsonIntArr2"
+                "Test_GetJsonIntArr3"
             ]
         },
     ]

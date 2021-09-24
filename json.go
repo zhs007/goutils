@@ -474,3 +474,213 @@ func GetJsonInt64Arr2(data []byte, key string) ([][]int64, error) {
 
 	return nil, nil
 }
+
+func GetJsonIntArr3(data []byte, key string) ([][][]int, error) {
+	arr := [][][]int{}
+
+	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		if err != nil {
+			if err != jsonparser.KeyPathNotFoundError {
+				Error("GetJsonIntArr3:ArrayEach:func",
+					zap.Int("offset", offset),
+					zap.Error(err))
+
+				return
+			}
+		}
+
+		if dataType == jsonparser.Array {
+			arr0 := [][]int{}
+
+			offset3, err3 := jsonparser.ArrayEach(value, func(value2 []byte, dataType2 jsonparser.ValueType, offset2 int, err2 error) {
+				if err2 != nil {
+					if err != jsonparser.KeyPathNotFoundError {
+						Error("GetJsonIntArr3:ArrayEach:func2",
+							zap.Int("offset", offset2),
+							zap.Error(err2))
+
+						return
+					}
+				}
+
+				if dataType2 == jsonparser.Array {
+					arr1 := []int{}
+
+					offset6, err6 := jsonparser.ArrayEach(value2, func(value5 []byte, dataType5 jsonparser.ValueType, offset5 int, err5 error) {
+						if err5 != nil {
+							if err != jsonparser.KeyPathNotFoundError {
+								Error("GetJsonIntArr3:ArrayEach:func3",
+									zap.Int("offset", offset5),
+									zap.Error(err5))
+
+								return
+							}
+						}
+
+						cv, err7 := GetJsonArrayEachInt(value5, dataType5, offset5, err5)
+						if err7 != nil {
+							Error("GetJsonIntArr3:ArrayEach:func3:GetJsonArrayEachInt",
+								zap.Int("offset", offset5),
+								zap.Error(err5))
+
+							return
+						}
+
+						arr1 = append(arr1, int(cv))
+					})
+					if err6 != nil {
+						Error("GetJsonIntArr3:ArrayEach:func2:ArrayEach",
+							zap.Int("offset", offset6),
+							zap.Error(err6))
+
+						return
+					}
+
+					arr0 = append(arr0, arr1)
+
+					return
+				}
+
+				Error("GetJsonIntArr3:ArrayEach:func2:dataType",
+					zap.Int("offset", offset2),
+					zap.String("dataType", dataType2.String()))
+			})
+			if err3 != nil {
+				Error("GetJsonIntArr3:ArrayEach:func:ArrayEach",
+					zap.Int("offset", offset3),
+					zap.Error(err3))
+
+				return
+			}
+
+			arr = append(arr, arr0)
+
+			return
+		}
+
+		Error("GetJsonIntArr3:ArrayEach:func:dataType",
+			zap.Int("offset", offset),
+			zap.String("dataType", dataType.String()))
+	}, key)
+	if err != nil {
+		if err != jsonparser.KeyPathNotFoundError {
+			Error("GetJsonIntArr3:ArrayEach",
+				zap.String("key", key),
+				zap.Int("offset", offset),
+				zap.Error(err))
+
+			return nil, err
+		}
+	}
+
+	if len(arr) > 0 {
+		return arr, nil
+	}
+
+	return nil, nil
+}
+
+func GetJsonInt64Arr3(data []byte, key string) ([][][]int64, error) {
+	arr := [][][]int64{}
+
+	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		if err != nil {
+			if err != jsonparser.KeyPathNotFoundError {
+				Error("GetJsonIntArr3:ArrayEach:func",
+					zap.Int("offset", offset),
+					zap.Error(err))
+
+				return
+			}
+		}
+
+		if dataType == jsonparser.Array {
+			arr0 := [][]int64{}
+
+			offset3, err3 := jsonparser.ArrayEach(value, func(value2 []byte, dataType2 jsonparser.ValueType, offset2 int, err2 error) {
+				if err2 != nil {
+					if err != jsonparser.KeyPathNotFoundError {
+						Error("GetJsonIntArr3:ArrayEach:func2",
+							zap.Int("offset", offset2),
+							zap.Error(err2))
+
+						return
+					}
+				}
+
+				if dataType2 == jsonparser.Array {
+					arr1 := []int64{}
+
+					offset6, err6 := jsonparser.ArrayEach(value2, func(value5 []byte, dataType5 jsonparser.ValueType, offset5 int, err5 error) {
+						if err5 != nil {
+							if err != jsonparser.KeyPathNotFoundError {
+								Error("GetJsonIntArr3:ArrayEach:func3",
+									zap.Int("offset", offset5),
+									zap.Error(err5))
+
+								return
+							}
+						}
+
+						cv, err7 := GetJsonArrayEachInt(value5, dataType5, offset5, err5)
+						if err7 != nil {
+							Error("GetJsonIntArr3:ArrayEach:func3:GetJsonArrayEachInt",
+								zap.Int("offset", offset5),
+								zap.Error(err5))
+
+							return
+						}
+
+						arr1 = append(arr1, cv)
+					})
+					if err6 != nil {
+						Error("GetJsonIntArr3:ArrayEach:func2:ArrayEach",
+							zap.Int("offset", offset6),
+							zap.Error(err6))
+
+						return
+					}
+
+					arr0 = append(arr0, arr1)
+
+					return
+				}
+
+				Error("GetJsonIntArr3:ArrayEach:func2:dataType",
+					zap.Int("offset", offset2),
+					zap.String("dataType", dataType2.String()))
+			})
+			if err3 != nil {
+				Error("GetJsonIntArr3:ArrayEach:func:ArrayEach",
+					zap.Int("offset", offset3),
+					zap.Error(err3))
+
+				return
+			}
+
+			arr = append(arr, arr0)
+
+			return
+		}
+
+		Error("GetJsonIntArr3:ArrayEach:func:dataType",
+			zap.Int("offset", offset),
+			zap.String("dataType", dataType.String()))
+	}, key)
+	if err != nil {
+		if err != jsonparser.KeyPathNotFoundError {
+			Error("GetJsonIntArr3:ArrayEach",
+				zap.String("key", key),
+				zap.Int("offset", offset),
+				zap.Error(err))
+
+			return nil, err
+		}
+	}
+
+	if len(arr) > 0 {
+		return arr, nil
+	}
+
+	return nil, nil
+}
