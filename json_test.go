@@ -3,6 +3,7 @@ package goutils
 import (
 	"testing"
 
+	"github.com/buger/jsonparser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -192,4 +193,52 @@ func Test_GetJsonInt64Arr2(t *testing.T) {
 	assert.Equal(t, arr5[1][1], int64(5))
 
 	t.Logf("Test_GetJsonInt64Arr2 OK")
+}
+
+func Test_GetJsonObjectArr(t *testing.T) {
+	arr1 := []int64{}
+	err := GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		if dataType == jsonparser.Object {
+			a, err := GetJsonInt(value, "a")
+			assert.NoError(t, err)
+
+			arr1 = append(arr1, a)
+		}
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr1), 3)
+	assert.Equal(t, arr1[0], int64(1))
+	assert.Equal(t, arr1[1], int64(2))
+	assert.Equal(t, arr1[2], int64(3))
+
+	arr2 := []int64{}
+	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "ab", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		if dataType == jsonparser.Object {
+			a, err := GetJsonInt(value, "a")
+			assert.NoError(t, err)
+
+			arr2 = append(arr2, a)
+		}
+	})
+	assert.NoError(t, err)
+	assert.Nil(t, err)
+	assert.Equal(t, len(arr2), 0)
+
+	arr3 := []int64{}
+	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"ab":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		if dataType == jsonparser.Object {
+			a, err := GetJsonInt(value, "a")
+			assert.NoError(t, err)
+
+			arr3 = append(arr3, a)
+		}
+	})
+	assert.NoError(t, err)
+	assert.Nil(t, err)
+	assert.Equal(t, len(arr3), 3)
+	assert.Equal(t, arr3[0], int64(1))
+	assert.Equal(t, arr3[1], int64(0))
+	assert.Equal(t, arr3[2], int64(3))
+
+	t.Logf("Test_GetJsonIntArr OK")
 }
