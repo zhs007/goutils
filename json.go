@@ -7,155 +7,160 @@ import (
 	"go.uber.org/zap"
 )
 
+func HasJsonKey(data []byte, keys ...string) bool {
+	_, _, _, e := jsonparser.Get(data, keys...)
+	if e != nil {
+		return e != jsonparser.KeyPathNotFoundError
+	}
+
+	return true
+}
+
 // GetJsonString - number to string
-func GetJsonString(data []byte, keys ...string) (val string, err error) {
+func GetJsonString(data []byte, keys ...string) (string, bool, error) {
 	v, t, _, e := jsonparser.Get(data, keys...)
 
 	if e != nil {
 		if e != jsonparser.KeyPathNotFoundError {
-			return "", e
+			return "", false, e
 		}
 
-		return "", nil
+		return "", false, nil
 	}
 
 	if t == jsonparser.Null {
-		return "", nil
+		return "", false, nil
 	}
 
 	if t == jsonparser.Number {
-		return string(v), nil
-		// if strings.Contains(string(v), ".") {
-		// 	nf, err := jsonparser.ParseFloat(v)
-		// 	if err != nil {
-		// 		return "", err
-		// 	}
-
-		// 	str := strconv.FormatFloat(nf, 'E', -1, 64)
-
-		// 	return str, nil
-		// }
-
-		// iv, err := jsonparser.ParseInt(v)
-		// if err != nil {
-		// 	return "", err
-		// }
-
-		// str := strconv.FormatInt(iv, 10)
-
-		// return str, nil
+		return string(v), true, nil
 	}
 
 	if t != jsonparser.String {
-		return "", ErrInvalidJsonString
+		return "", false, ErrInvalidJsonString
 	}
 
 	// If no escapes return raw content
 	if bytes.IndexByte(v, '\\') == -1 {
-		return string(v), nil
+		return string(v), true, nil
 	}
 
-	return jsonparser.ParseString(v)
+	str, err := jsonparser.ParseString(v)
+	if err != nil {
+		return "", false, err
+	}
+
+	return str, true, nil
 }
 
-func GetJsonInt(data []byte, keys ...string) (val int64, err error) {
+func GetJsonInt(data []byte, keys ...string) (int64, bool, error) {
 	v, t, _, e := jsonparser.Get(data, keys...)
 
 	if e != nil {
 		if e != jsonparser.KeyPathNotFoundError {
-			return 0, e
+			return 0, false, e
 		}
 
-		return 0, nil
+		return 0, false, nil
 	}
 
 	if t == jsonparser.Null {
-		return 0, nil
+		return 0, false, nil
 	}
 
 	if t == jsonparser.String {
 		if len(v) == 0 {
-			return 0, nil
+			return 0, false, nil
 		}
 
 		// If no escapes return raw content
 		if bytes.IndexByte(v, '\\') == -1 {
 			n, err := String2Int64(string(v))
 			if err != nil {
-				return 0, err
+				return 0, false, err
 			}
 
-			return n, nil
+			return n, true, nil
 		}
 
 		s, err := jsonparser.ParseString(v)
 		if err != nil {
-			return 0, err
+			return 0, false, err
 		}
 
 		n, err := String2Int64(s)
 		if err != nil {
-			return 0, err
+			return 0, false, err
 		}
 
-		return n, nil
+		return n, true, nil
 	}
 
 	if t != jsonparser.Number {
-		return 0, ErrInvalidJsonInt
+		return 0, false, ErrInvalidJsonInt
 	}
 
-	return String2Int64(string(v))
+	i64, err := String2Int64(string(v))
+	if err != nil {
+		return 0, false, err
+	}
+
+	return i64, true, nil
 }
 
-func GetJsonFloat(data []byte, keys ...string) (val float64, err error) {
+func GetJsonFloat(data []byte, keys ...string) (float64, bool, error) {
 	v, t, _, e := jsonparser.Get(data, keys...)
 
 	if e != nil {
 		if e != jsonparser.KeyPathNotFoundError {
-			return 0, e
+			return 0, false, e
 		}
 
-		return 0, nil
+		return 0, false, nil
 	}
 
 	if t == jsonparser.Null {
-		return 0, nil
+		return 0, false, nil
 	}
 
 	if t == jsonparser.String {
 		if len(v) == 0 {
-			return 0, nil
+			return 0, false, nil
 		}
 
 		// If no escapes return raw content
 		if bytes.IndexByte(v, '\\') == -1 {
 			n, err := String2Float64(string(v))
 			if err != nil {
-				return 0, err
+				return 0, false, err
 			}
 
-			return n, nil
+			return n, true, nil
 		}
 
 		s, err := jsonparser.ParseString(v)
 		if err != nil {
-			return 0, err
+			return 0, false, err
 		}
 
 		n, err := String2Float64(s)
 		if err != nil {
-			return 0, err
+			return 0, false, err
 		}
 
-		return n, nil
+		return n, true, nil
 	}
 
 	if t != jsonparser.Number {
-		return 0, ErrInvalidJsonInt
+		return 0, false, ErrInvalidJsonInt
 	}
 
-	return String2Float64(string(v))
+	f64, err := String2Float64(string(v))
+	if err != nil {
+		return 0, false, err
+	}
+
+	return f64, true, nil
 }
 
 func GetJsonArrayEachInt(value1 []byte, dataType1 jsonparser.ValueType, offset1 int, err1 error) (int64, error) {

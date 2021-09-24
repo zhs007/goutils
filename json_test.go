@@ -7,77 +7,109 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_HasJsonKey(t *testing.T) {
+	isok := HasJsonKey([]byte(`{"abc":"123"}`), "abc")
+	assert.Equal(t, isok, true)
+
+	isok = HasJsonKey([]byte(`{"abc":123}`), "ab")
+	assert.Equal(t, isok, false)
+
+	isok = HasJsonKey([]byte(`{"abc":null}`), "abc")
+	assert.Equal(t, isok, true)
+
+	isok = HasJsonKey([]byte(`{"abc":null}`), "ab")
+	assert.Equal(t, isok, false)
+
+	t.Logf("Test_HasJsonKey OK")
+}
+
 func Test_GetJsonString(t *testing.T) {
-	s, err := GetJsonString([]byte(`{"abc":"123"}`), "abc")
+	s, isok, err := GetJsonString([]byte(`{"abc":"123"}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, s, "123")
 
-	s, err = GetJsonString([]byte(`{"abc":123}`), "abc")
+	s, isok, err = GetJsonString([]byte(`{"abc":123}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, s, "123")
 
-	s, err = GetJsonString([]byte(`{"abc":123.456}`), "abc")
+	s, isok, err = GetJsonString([]byte(`{"abc":123.456}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, s, "123.456")
 
-	s, err = GetJsonString([]byte(`{"abc":null}`), "abc")
+	s, isok, err = GetJsonString([]byte(`{"abc":null}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, false)
 	assert.Equal(t, s, "")
 
 	t.Logf("Test_GetJsonString OK")
 }
 
 func Test_GetJsonInt(t *testing.T) {
-	i64, err := GetJsonInt([]byte(`{"abc":"123"}`), "abc")
+	i64, isok, err := GetJsonInt([]byte(`{"abc":"123"}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, i64, int64(123))
 
-	i64, err = GetJsonInt([]byte(`{"abc":123}`), "abc")
+	i64, isok, err = GetJsonInt([]byte(`{"abc":123}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, i64, int64(123))
 
-	i64, err = GetJsonInt([]byte(`{"abc":123.456}`), "abc")
+	i64, isok, err = GetJsonInt([]byte(`{"abc":123.456}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, i64, int64(123))
 
-	i64, err = GetJsonInt([]byte(`{"abc":"123.456"}`), "abc")
+	i64, isok, err = GetJsonInt([]byte(`{"abc":"123.456"}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, i64, int64(123))
 
-	i64, err = GetJsonInt([]byte(`{"abc":""}`), "abc")
+	i64, isok, err = GetJsonInt([]byte(`{"abc":""}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, false)
 	assert.Equal(t, i64, int64(0))
 
-	i64, err = GetJsonInt([]byte(`{"abc":null}`), "abc")
+	i64, isok, err = GetJsonInt([]byte(`{"abc":null}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, false)
 	assert.Equal(t, i64, int64(0))
 
 	t.Logf("Test_GetJsonInt OK")
 }
 
 func Test_GetJsonFloat(t *testing.T) {
-	f64, err := GetJsonFloat([]byte(`{"abc":"123"}`), "abc")
+	f64, isok, err := GetJsonFloat([]byte(`{"abc":"123"}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, f64, float64(123))
 
-	f64, err = GetJsonFloat([]byte(`{"abc":123}`), "abc")
+	f64, isok, err = GetJsonFloat([]byte(`{"abc":123}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, f64, float64(123))
 
-	f64, err = GetJsonFloat([]byte(`{"abc":123.456}`), "abc")
+	f64, isok, err = GetJsonFloat([]byte(`{"abc":123.456}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, f64, float64(123.456))
 
-	f64, err = GetJsonFloat([]byte(`{"abc":"123.456"}`), "abc")
+	f64, isok, err = GetJsonFloat([]byte(`{"abc":"123.456"}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
 	assert.Equal(t, f64, float64(123.456))
 
-	f64, err = GetJsonFloat([]byte(`{"abc":""}`), "abc")
+	f64, isok, err = GetJsonFloat([]byte(`{"abc":""}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, false)
 	assert.Equal(t, f64, float64(0))
 
-	f64, err = GetJsonFloat([]byte(`{"abc":null}`), "abc")
+	f64, isok, err = GetJsonFloat([]byte(`{"abc":null}`), "abc")
 	assert.NoError(t, err)
+	assert.Equal(t, isok, false)
 	assert.Equal(t, f64, float64(0))
 
 	t.Logf("Test_GetJsonFloat OK")
@@ -199,10 +231,12 @@ func Test_GetJsonObjectArr(t *testing.T) {
 	arr1 := []int64{}
 	err := GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
-			a, err := GetJsonInt(value, "a")
+			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
 
-			arr1 = append(arr1, a)
+			if isok {
+				arr1 = append(arr1, a)
+			}
 		}
 	})
 	assert.NoError(t, err)
@@ -214,10 +248,12 @@ func Test_GetJsonObjectArr(t *testing.T) {
 	arr2 := []int64{}
 	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "ab", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
-			a, err := GetJsonInt(value, "a")
+			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
 
-			arr2 = append(arr2, a)
+			if isok {
+				arr2 = append(arr2, a)
+			}
 		}
 	})
 	assert.NoError(t, err)
@@ -227,18 +263,19 @@ func Test_GetJsonObjectArr(t *testing.T) {
 	arr3 := []int64{}
 	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"ab":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
-			a, err := GetJsonInt(value, "a")
+			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
 
-			arr3 = append(arr3, a)
+			if isok {
+				arr3 = append(arr3, a)
+			}
 		}
 	})
 	assert.NoError(t, err)
 	assert.Nil(t, err)
-	assert.Equal(t, len(arr3), 3)
+	assert.Equal(t, len(arr3), 2)
 	assert.Equal(t, arr3[0], int64(1))
-	assert.Equal(t, arr3[1], int64(0))
-	assert.Equal(t, arr3[2], int64(3))
+	assert.Equal(t, arr3[1], int64(3))
 
 	t.Logf("Test_GetJsonIntArr OK")
 }
