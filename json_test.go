@@ -97,6 +97,10 @@ func Test_GetJsonIntArr(t *testing.T) {
 	assert.Equal(t, arr2[1], 2)
 	assert.Equal(t, arr2[2], 3)
 
+	arr3, err := GetJsonIntArr([]byte(`{"abc":[1,"2",3.8]}`), "ab")
+	assert.NoError(t, err)
+	assert.Nil(t, arr3)
+
 	t.Logf("Test_GetJsonIntArr OK")
 }
 
@@ -114,6 +118,10 @@ func Test_GetJsonInt64Arr(t *testing.T) {
 	assert.Equal(t, arr2[0], int64(1))
 	assert.Equal(t, arr2[1], int64(2))
 	assert.Equal(t, arr2[2], int64(3))
+
+	arr3, err := GetJsonInt64Arr([]byte(`{"abc":[1,"2",3.8]}`), "ab")
+	assert.NoError(t, err)
+	assert.Nil(t, arr3)
 
 	t.Logf("Test_GetJsonInt64Arr OK")
 }

@@ -242,6 +242,8 @@ func GetJsonIntArr(data []byte, key string) ([]int, error) {
 
 			return nil, err
 		}
+
+		return nil, nil
 	}
 
 	return arr, nil
@@ -283,6 +285,8 @@ func GetJsonInt64Arr(data []byte, key string) ([]int64, error) {
 
 			return nil, err
 		}
+
+		return nil, nil
 	}
 
 	return arr, nil
