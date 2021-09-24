@@ -125,3 +125,71 @@ func Test_GetJsonInt64Arr(t *testing.T) {
 
 	t.Logf("Test_GetJsonInt64Arr OK")
 }
+
+func Test_GetJsonIntArr2(t *testing.T) {
+	arr1, err := GetJsonIntArr2([]byte(`{"abc":[[1,2,3],[4,5]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr1), 2)
+	assert.Equal(t, len(arr1[0]), 3)
+	assert.Equal(t, len(arr1[1]), 2)
+	assert.Equal(t, arr1[0][0], 1)
+	assert.Equal(t, arr1[0][1], 2)
+	assert.Equal(t, arr1[0][2], 3)
+	assert.Equal(t, arr1[1][0], 4)
+	assert.Equal(t, arr1[1][1], 5)
+
+	arr2, err := GetJsonIntArr2([]byte(`{"abc":[1,"2",3.8]}`), "abc")
+	assert.NoError(t, err)
+	assert.Nil(t, arr2)
+
+	arr3, err := GetJsonIntArr2([]byte(`{"abc":[1,"2",3.8]}`), "ab")
+	assert.NoError(t, err)
+	assert.Nil(t, arr3)
+
+	arr5, err := GetJsonIntArr2([]byte(`{"abc":[[1,2,3.5],["4",5]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr5), 2)
+	assert.Equal(t, len(arr5[0]), 3)
+	assert.Equal(t, len(arr5[1]), 2)
+	assert.Equal(t, arr5[0][0], 1)
+	assert.Equal(t, arr5[0][1], 2)
+	assert.Equal(t, arr5[0][2], 3)
+	assert.Equal(t, arr5[1][0], 4)
+	assert.Equal(t, arr5[1][1], 5)
+
+	t.Logf("Test_GetJsonIntArr2 OK")
+}
+
+func Test_GetJsonInt64Arr2(t *testing.T) {
+	arr1, err := GetJsonInt64Arr2([]byte(`{"abc":[[1,2,3],[4,5]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr1), 2)
+	assert.Equal(t, len(arr1[0]), 3)
+	assert.Equal(t, len(arr1[1]), 2)
+	assert.Equal(t, arr1[0][0], int64(1))
+	assert.Equal(t, arr1[0][1], int64(2))
+	assert.Equal(t, arr1[0][2], int64(3))
+	assert.Equal(t, arr1[1][0], int64(4))
+	assert.Equal(t, arr1[1][1], int64(5))
+
+	arr2, err := GetJsonInt64Arr2([]byte(`{"abc":[1,"2",3.8]}`), "abc")
+	assert.NoError(t, err)
+	assert.Nil(t, arr2)
+
+	arr3, err := GetJsonInt64Arr2([]byte(`{"abc":[1,"2",3.8]}`), "ab")
+	assert.NoError(t, err)
+	assert.Nil(t, arr3)
+
+	arr5, err := GetJsonInt64Arr2([]byte(`{"abc":[[1,2,3.5],["4",5]]}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(arr5), 2)
+	assert.Equal(t, len(arr5[0]), 3)
+	assert.Equal(t, len(arr5[1]), 2)
+	assert.Equal(t, arr5[0][0], int64(1))
+	assert.Equal(t, arr5[0][1], int64(2))
+	assert.Equal(t, arr5[0][2], int64(3))
+	assert.Equal(t, arr5[1][0], int64(4))
+	assert.Equal(t, arr5[1][1], int64(5))
+
+	t.Logf("Test_GetJsonInt64Arr2 OK")
+}
