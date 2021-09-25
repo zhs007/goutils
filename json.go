@@ -2,6 +2,7 @@ package goutils
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/buger/jsonparser"
 	"go.uber.org/zap"
@@ -161,6 +162,79 @@ func GetJsonFloat(data []byte, keys ...string) (float64, bool, error) {
 	}
 
 	return f64, true, nil
+}
+
+// GetJsonBool - everything to bool, null -> false, 0 -> false, True -> true
+func GetJsonBool(data []byte, keys ...string) (bool, bool, error) {
+	v, t, _, e := jsonparser.Get(data, keys...)
+
+	if e != nil {
+		if e != jsonparser.KeyPathNotFoundError {
+			return false, false, e
+		}
+
+		return false, false, nil
+	}
+
+	if t == jsonparser.Null {
+		return false, true, nil
+	} else if t == jsonparser.Boolean {
+		b, err := jsonparser.ParseBoolean(v)
+		if err != nil {
+			return false, false, err
+		}
+
+		return b, true, nil
+	} else if t == jsonparser.Number {
+		n, err := String2Int64(string(v))
+		if err != nil {
+			return false, false, err
+		}
+
+		return n != 0, true, nil
+	} else if t == jsonparser.String {
+		if len(v) == 0 {
+			return false, false, nil
+		}
+
+		// If no escapes return raw content
+		if bytes.IndexByte(v, '\\') == -1 {
+			s := strings.ToLower(string(v))
+			if s == "true" {
+				return true, true, nil
+			} else if s == "false" {
+				return false, true, nil
+			}
+
+			n, err := String2Int64(s)
+			if err != nil {
+				return false, false, err
+			}
+
+			return n != 0, true, nil
+		}
+
+		s, err := jsonparser.ParseString(v)
+		if err != nil {
+			return false, false, err
+		}
+
+		s = strings.ToLower(s)
+		if s == "true" {
+			return true, true, nil
+		} else if s == "false" {
+			return false, true, nil
+		}
+
+		n, err := String2Int64(s)
+		if err != nil {
+			return false, false, err
+		}
+
+		return n != 0, true, nil
+	}
+
+	return false, false, ErrInvalidJsonBool
 }
 
 func GetJsonArrayEachInt(value1 []byte, dataType1 jsonparser.ValueType, offset1 int, err1 error) (int64, error) {
@@ -685,7 +759,9 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 	return nil, nil
 }
 
-func GetJsonObject(data []byte, cb func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error, keys ...string) error {
+func GetJsonObject(data []byte,
+	cb func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error,
+	keys ...string) error {
 	err := jsonparser.ObjectEach(data, cb, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {

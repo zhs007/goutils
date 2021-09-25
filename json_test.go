@@ -363,3 +363,57 @@ func Test_GetJsonObject(t *testing.T) {
 
 	t.Logf("Test_GetJsonIntArr OK")
 }
+
+func Test_GetJsonBool(t *testing.T) {
+	val, isok, err := GetJsonBool([]byte(`{"abc":"123"}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, true)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":true}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, true)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":false}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, false)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":null}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, false)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":0}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, false)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":1}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, true)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":"0"}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, false)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":"True"}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, true)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":"FALSE"}`), "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, isok, true)
+	assert.Equal(t, val, false)
+
+	val, isok, err = GetJsonBool([]byte(`{"abc":"Tru"}`), "abc")
+	assert.Error(t, err)
+	assert.Equal(t, isok, false)
+	assert.Equal(t, val, false)
+
+	t.Logf("Test_GetJsonBool OK")
+}
