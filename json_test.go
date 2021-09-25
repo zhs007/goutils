@@ -229,7 +229,7 @@ func Test_GetJsonInt64Arr2(t *testing.T) {
 
 func Test_GetJsonObjectArr(t *testing.T) {
 	arr1 := []int64{}
-	err := GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	err := GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
 			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
@@ -238,7 +238,7 @@ func Test_GetJsonObjectArr(t *testing.T) {
 				arr1 = append(arr1, a)
 			}
 		}
-	})
+	}, "abc")
 	assert.NoError(t, err)
 	assert.Equal(t, len(arr1), 3)
 	assert.Equal(t, arr1[0], int64(1))
@@ -246,7 +246,7 @@ func Test_GetJsonObjectArr(t *testing.T) {
 	assert.Equal(t, arr1[2], int64(3))
 
 	arr2 := []int64{}
-	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), "ab", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"a":2},{"a":3}]}`), func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
 			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
@@ -255,13 +255,13 @@ func Test_GetJsonObjectArr(t *testing.T) {
 				arr2 = append(arr2, a)
 			}
 		}
-	})
+	}, "ab")
 	assert.NoError(t, err)
 	assert.Nil(t, err)
 	assert.Equal(t, len(arr2), 0)
 
 	arr3 := []int64{}
-	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"ab":2},{"a":3}]}`), "abc", func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+	err = GetJsonObjectArr([]byte(`{"abc":[{"a":1},{"ab":2},{"a":3}]}`), func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		if dataType == jsonparser.Object {
 			a, isok, err := GetJsonInt(value, "a")
 			assert.NoError(t, err)
@@ -270,7 +270,7 @@ func Test_GetJsonObjectArr(t *testing.T) {
 				arr3 = append(arr3, a)
 			}
 		}
-	})
+	}, "abc")
 	assert.NoError(t, err)
 	assert.Nil(t, err)
 	assert.Equal(t, len(arr3), 2)

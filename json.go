@@ -211,14 +211,14 @@ func GetJsonArrayEachInt(value1 []byte, dataType1 jsonparser.ValueType, offset1 
 	return String2Int64(string(value1))
 }
 
-func GetJsonIntArr(data []byte, key string) ([]int, error) {
+func GetJsonIntArr(data []byte, keys ...string) ([]int, error) {
 	arr := []int{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value1 []byte, dataType1 jsonparser.ValueType, offset1 int, err1 error) {
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonIntArr:ArrayEach:func",
-					zap.String("key", key),
+					zap.Strings("keys", keys),
 					zap.Int("offset", offset1),
 					zap.Error(err1))
 
@@ -238,7 +238,7 @@ func GetJsonIntArr(data []byte, key string) ([]int, error) {
 		}
 
 		arr = append(arr, int(cv))
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr:ArrayEach",
@@ -254,14 +254,14 @@ func GetJsonIntArr(data []byte, key string) ([]int, error) {
 	return arr, nil
 }
 
-func GetJsonInt64Arr(data []byte, key string) ([]int64, error) {
+func GetJsonInt64Arr(data []byte, keys ...string) ([]int64, error) {
 	arr := []int64{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value1 []byte, dataType1 jsonparser.ValueType, offset1 int, err1 error) {
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonInt64Arr:ArrayEach:func",
-					zap.String("key", key),
+					zap.Strings("keys", keys),
 					zap.Int("offset", offset1),
 					zap.Error(err1))
 
@@ -281,7 +281,7 @@ func GetJsonInt64Arr(data []byte, key string) ([]int64, error) {
 		}
 
 		arr = append(arr, cv)
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonInt64Arr:ArrayEach",
@@ -297,12 +297,12 @@ func GetJsonInt64Arr(data []byte, key string) ([]int64, error) {
 	return arr, nil
 }
 
-func GetJsonObjectArr(data []byte, key string, cb func(value []byte, dataType jsonparser.ValueType, offset int, err error)) error {
+func GetJsonObjectArr(data []byte, cb func(value []byte, dataType jsonparser.ValueType, offset int, err error), keys ...string) error {
 	offset, err := jsonparser.ArrayEach(data, func(value1 []byte, dataType1 jsonparser.ValueType, offset1 int, err1 error) {
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonObjectArr:ArrayEach:func",
-					zap.String("key", key),
+					zap.Strings("keys", keys),
 					zap.Int("offset", offset1),
 					zap.Error(err1))
 
@@ -313,7 +313,7 @@ func GetJsonObjectArr(data []byte, key string, cb func(value []byte, dataType js
 		}
 
 		cb(value1, dataType1, offset1, err1)
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonObjectArr:ArrayEach",
@@ -327,7 +327,7 @@ func GetJsonObjectArr(data []byte, key string, cb func(value []byte, dataType js
 	return nil
 }
 
-func GetJsonIntArr2(data []byte, key string) ([][]int, error) {
+func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 	arr := [][]int{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -382,11 +382,11 @@ func GetJsonIntArr2(data []byte, key string) ([][]int, error) {
 		Error("GetJsonIntArr2:ArrayEach:func:dataType",
 			zap.Int("offset", offset),
 			zap.String("dataType", dataType.String()))
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr2:ArrayEach",
-				zap.String("key", key),
+				zap.Strings("keys", keys),
 				zap.Int("offset", offset),
 				zap.Error(err))
 
@@ -401,7 +401,7 @@ func GetJsonIntArr2(data []byte, key string) ([][]int, error) {
 	return nil, nil
 }
 
-func GetJsonInt64Arr2(data []byte, key string) ([][]int64, error) {
+func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 	arr := [][]int64{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -456,11 +456,11 @@ func GetJsonInt64Arr2(data []byte, key string) ([][]int64, error) {
 		Error("GetJsonInt64Arr2:ArrayEach:func:dataType",
 			zap.Int("offset", offset),
 			zap.String("dataType", dataType.String()))
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonInt64Arr2:ArrayEach",
-				zap.String("key", key),
+				zap.Strings("keys", keys),
 				zap.Int("offset", offset),
 				zap.Error(err))
 
@@ -475,7 +475,7 @@ func GetJsonInt64Arr2(data []byte, key string) ([][]int64, error) {
 	return nil, nil
 }
 
-func GetJsonIntArr3(data []byte, key string) ([][][]int, error) {
+func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 	arr := [][][]int{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -561,11 +561,11 @@ func GetJsonIntArr3(data []byte, key string) ([][][]int, error) {
 		Error("GetJsonIntArr3:ArrayEach:func:dataType",
 			zap.Int("offset", offset),
 			zap.String("dataType", dataType.String()))
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr3:ArrayEach",
-				zap.String("key", key),
+				zap.Strings("keys", keys),
 				zap.Int("offset", offset),
 				zap.Error(err))
 
@@ -580,7 +580,7 @@ func GetJsonIntArr3(data []byte, key string) ([][][]int, error) {
 	return nil, nil
 }
 
-func GetJsonInt64Arr3(data []byte, key string) ([][][]int64, error) {
+func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 	arr := [][][]int64{}
 
 	offset, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -666,11 +666,11 @@ func GetJsonInt64Arr3(data []byte, key string) ([][][]int64, error) {
 		Error("GetJsonIntArr3:ArrayEach:func:dataType",
 			zap.Int("offset", offset),
 			zap.String("dataType", dataType.String()))
-	}, key)
+	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr3:ArrayEach",
-				zap.String("key", key),
+				zap.Strings("keys", keys),
 				zap.Int("offset", offset),
 				zap.Error(err))
 
