@@ -323,3 +323,43 @@ func Test_GetJsonInt64Arr3(t *testing.T) {
 
 	t.Logf("Test_GetJsonInt64Arr3 OK")
 }
+
+func Test_GetJsonObject(t *testing.T) {
+	map1 := make(map[int]int)
+	err := GetJsonObject([]byte(`{"abc":{"1":2,"2":3}}`),
+		func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			if dataType == jsonparser.Number {
+				k, err := String2Int64(string(key))
+				assert.NoError(t, err)
+
+				v, err := String2Int64(string(value))
+				assert.NoError(t, err)
+
+				map1[int(k)] = int(v)
+			}
+
+			return nil
+		}, "abc")
+	assert.NoError(t, err)
+	assert.Equal(t, len(map1), 2)
+	assert.Equal(t, map1[1], 2)
+	assert.Equal(t, map1[2], 3)
+
+	err = GetJsonObject([]byte(`{"abc":{1:2,2:3}}`),
+		func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+			if dataType == jsonparser.Number {
+				k, err := String2Int64(string(key))
+				assert.NoError(t, err)
+
+				v, err := String2Int64(string(value))
+				assert.NoError(t, err)
+
+				map1[int(k)] = int(v)
+			}
+
+			return nil
+		}, "abc")
+	assert.Error(t, err)
+
+	t.Logf("Test_GetJsonIntArr OK")
+}

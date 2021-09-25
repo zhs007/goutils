@@ -684,3 +684,17 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 
 	return nil, nil
 }
+
+func GetJsonObject(data []byte, cb func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error, keys ...string) error {
+	err := jsonparser.ObjectEach(data, cb, keys...)
+	if err != nil {
+		if err != jsonparser.KeyPathNotFoundError {
+			Error("GetJsonObject:ObjectEach",
+				zap.Error(err))
+
+			return err
+		}
+	}
+
+	return nil
+}
