@@ -18,22 +18,12 @@ func (t Time) Now() time.Time {
 }
 
 var gTime ITime
-var gUTCLocal *time.Location
 
 // FormatNow - format time
 func FormatNow(t ITime) string {
-	return t.Now().In(gUTCLocal).Format("2006-01-02_15:04:05")
-}
-
-func GetCurTimestamp() int64 {
-	return time.Now().Unix()
+	return t.Now().In(time.UTC).Format("2006-01-02_15:04:05")
 }
 
 func init() {
 	gTime = &Time{}
-
-	l, err := time.LoadLocation("")
-	if err == nil {
-		gUTCLocal = l
-	}
 }
