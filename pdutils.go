@@ -90,3 +90,14 @@ func IntArr3ToInt32Arr(arr [][][]int) ([]int32, int, int, int) {
 
 	return arr3, len(arr[0][0]), len(arr[0]), len(arr)
 }
+
+// MapII2MapI32I32 - map[int]int to map[int32]int32
+func MapII2MapI32I32(mapII map[int]int) map[int32]int32 {
+	mapI32I32 := make(map[int32]int32)
+
+	for k, v := range mapII {
+		mapI32I32[int32(k)] = int32(v)
+	}
+
+	return mapI32I32
+}
