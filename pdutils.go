@@ -101,3 +101,14 @@ func MapII2MapI32I32(mapII map[int]int) map[int32]int32 {
 
 	return mapI32I32
 }
+
+// MapI64I2MapI64I32 - map[int64]int to map[int64]int32
+func MapI64I2MapI64I32(mapII map[int64]int) map[int64]int32 {
+	mapI64I32 := make(map[int64]int32)
+
+	for k, v := range mapII {
+		mapI64I32[k] = int32(v)
+	}
+
+	return mapI64I32
+}
