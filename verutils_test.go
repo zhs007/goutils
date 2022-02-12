@@ -36,3 +36,16 @@ func Test_ParseVersion(t *testing.T) {
 
 	t.Logf("Test_LoadVersion OK")
 }
+
+func Test_BuildVersionFile(t *testing.T) {
+	vobj0, err0 := ParseVersion("v1.20.03")
+	assert.NoError(t, err0)
+
+	err := BuildVersionFile("./unittestdata/version.txt", "./unittestdata/version.temp", vobj0)
+	assert.NoError(t, err)
+
+	isok := IsSameFile("./unittestdata/version.txt", "./unittestdata/version.cmp")
+	assert.Equal(t, isok, true)
+
+	t.Logf("Test_BuildVersionFile OK")
+}

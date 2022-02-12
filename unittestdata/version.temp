@@ -1,0 +1,4 @@
+package goutils
+
+// Version -
+const Version = "v{{.Major}}.{{.Minor}}.{{.Patch}}"

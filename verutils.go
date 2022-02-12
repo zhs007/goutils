@@ -1,9 +1,11 @@
 package goutils
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"text/template"
 
 	"go.uber.org/zap"
 )
@@ -76,4 +78,46 @@ func ParseVersion(str string) (*VersionObj, error) {
 		Minor: int(v1),
 		Patch: int(v2),
 	}, nil
+}
+
+func BuildVersionFile(fn string, tmpfn string, vobj *VersionObj) error {
+	data, err := ioutil.ReadFile(tmpfn)
+	if err != nil {
+		Warn("BuildVersionFile:ReadFile",
+			zap.String("tmpfn", tmpfn))
+
+		return err
+	}
+
+	buf := new(bytes.Buffer)
+
+	t, err := template.New("buildversion").Parse(string(data))
+	if err != nil {
+		Warn("BuildVersionFile:template.New",
+			zap.String("tmpfn", tmpfn),
+			zap.Error(err))
+
+		return err
+	}
+
+	err = t.Execute(buf, vobj)
+	if err != nil {
+		Warn("BuildVersionFile:Execute",
+			zap.String("tmpfn", tmpfn),
+			zap.String("version", vobj.ToString()),
+			zap.Error(err))
+
+		return err
+	}
+
+	err = ioutil.WriteFile(fn, buf.Bytes(), 0644)
+	if err != nil {
+		Warn("BuildVersionFile:WriteFile",
+			zap.String("fn", fn),
+			zap.Error(err))
+
+		return err
+	}
+
+	return nil
 }
