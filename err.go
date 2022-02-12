@@ -11,4 +11,6 @@ var (
 	ErrInvalidJsonInt = errors.New("invalid json int")
 	// ErrInvalidJsonBool - invalid json bool
 	ErrInvalidJsonBool = errors.New("invalid json bool")
+	// ErrInvalidVersion - invalid Version
+	ErrInvalidVersion = errors.New("invalid Version")
 )
