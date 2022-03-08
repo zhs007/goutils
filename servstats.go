@@ -13,6 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	ServStatsMsgName = "msgname"
+)
+
 type ServStatsMsgNode struct {
 	Start     time.Time `json:"-"`
 	End       time.Time `json:"-"`
@@ -156,7 +160,7 @@ func (stats *ServStats) mainLoop() {
 	for {
 		select {
 		case ctx := <-stats.ChanStart:
-			name, isok := ctx.Value("msgname").(string)
+			name, isok := ctx.Value(ServStatsMsgName).(string)
 			if !isok {
 				Error("ServStats:mainLoop:ChanStart",
 					zap.Error(ErrNoMsgName))
@@ -171,7 +175,7 @@ func (stats *ServStats) mainLoop() {
 
 			msg.startMsg(ctx)
 		case ctx := <-stats.ChanEnd:
-			name, isok := ctx.Value("msgname").(string)
+			name, isok := ctx.Value(ServStatsMsgName).(string)
 			if !isok {
 				Error("ServStats:mainLoop:ChanEnd",
 					zap.Error(ErrNoMsgName))
