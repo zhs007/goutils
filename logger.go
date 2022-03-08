@@ -248,7 +248,7 @@ func JSON(name string, jobj interface{}) zap.Field {
 
 	b, err := json.Marshal(jobj)
 	if err != nil {
-		Warn("sanserv.JSON",
+		Warn("goutils.JSON",
 			zap.Error(err))
 
 		return zap.String(name, err.Error())
