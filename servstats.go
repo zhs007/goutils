@@ -14,6 +14,7 @@ import (
 )
 
 type ServStatsContext struct {
+	ID      int
 	MsgName string
 	State   int
 }
@@ -71,6 +72,8 @@ func (msg *ServStatsMsg) endMsg(ctx *ServStatsContext, maxNodes int) {
 	if !isok {
 		Warn("ServStatsMsg:EndMsg",
 			zap.Error(ErrNoMsgCtx))
+
+		return
 	}
 
 	msg.NoEndNodes[ctx].End = time.Now()
@@ -132,7 +135,9 @@ func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOut
 
 func (stats *ServStats) newPool() {
 	for i := 0; i < stats.PoolSize; i++ {
-		stats.poolContext = append(stats.poolContext, &ServStatsContext{})
+		stats.poolContext = append(stats.poolContext, &ServStatsContext{
+			ID: len(stats.poolContext) + 1,
+		})
 	}
 
 	stats.TotalPoolSize += stats.PoolSize
