@@ -13,8 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type ServStatsKey int
+
 const (
-	ServStatsMsgName = "msgname"
+	ServStatsMsgName ServStatsKey = iota
 )
 
 type ServStatsMsgNode struct {
