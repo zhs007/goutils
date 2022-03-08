@@ -48,6 +48,10 @@ func (msg *ServStatsMsg) startMsg(ctx context.Context) {
 	msg.NoEndNodes[ctx] = &ServStatsMsgNode{
 		Start: time.Now(),
 	}
+
+	if len(msg.NoEndNodes) > msg.MaxParallels {
+		msg.MaxParallels = len(msg.NoEndNodes)
+	}
 }
 
 func (msg *ServStatsMsg) endMsg(ctx context.Context, maxNodes int) {
