@@ -30,10 +30,11 @@ type ServStatsMsg struct {
 	NoEndNodes   map[context.Context]*ServStatsMsgNode `json:"noEndNodes,omitempty"`
 }
 
-func NewServStatsMsg(name string) *ServStatsMsg {
+func newServStatsMsg(name string) *ServStatsMsg {
 	return &ServStatsMsg{
-		Name:    name,
-		MinTime: math.MaxFloat64,
+		Name:       name,
+		MinTime:    math.MaxFloat64,
+		NoEndNodes: make(map[context.Context]*ServStatsMsgNode),
 	}
 }
 
@@ -125,6 +126,10 @@ func (stats *ServStats) StartMsg(ctx context.Context) {
 
 func (stats *ServStats) EndMsg(ctx context.Context) {
 	stats.ChanEnd <- ctx
+}
+
+func (stats *ServStats) RegMsg(name string) {
+	stats.MapMsgs[name] = newServStatsMsg(name)
 }
 
 func (stats *ServStats) output() {
