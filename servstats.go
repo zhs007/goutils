@@ -13,23 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
-type ServStatsContext struct {
-	ID      int
-	MsgName string
-	State   int
-}
-
-// type ServStatsKey int
-
-// const (
-// 	ServStatsMsgName ServStatsKey = iota
-// )
-
 type ServStatsMsgNode struct {
 	ID    int
 	Start time.Time
 	End   time.Time
-	// SecondOff float64   `json:"secondOff,omitempty"`
 }
 
 type ServStatsMsg struct {
@@ -112,8 +99,6 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 		msg.MinTime = dt
 	}
 
-	// msg.NoEndNodes[node.ID].SecondOff = dt
-
 	msg.TotalTime += dt
 	msg.TotalTimes++
 
@@ -122,9 +107,6 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 		sort.Slice(msg.Nodes, func(i, j int) bool {
 			return msg.Nodes[i] > msg.Nodes[j]
 		})
-		// sort.Slice(msg.Nodes, func(i, j int) bool {
-		// 	return msg.Nodes[i].SecondOff > msg.Nodes[j].SecondOff
-		// })
 
 		msg.Nodes = msg.Nodes[:maxNodes]
 	}
@@ -138,41 +120,24 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 type ServStats struct {
 	MapMsgs     map[string]*ServStatsMsg `json:"mapMsgs,omitempty"`
 	MaxNodes    int                      `json:"-"`
-	ChanCtx     chan *ServStatsContext   `json:"-"`
 	ChanState   chan int                 `json:"-"`
 	TimerOutput *time.Timer              `json:"-"`
 	PathOutput  string                   `json:"-"`
-	// TotalPoolSize int                      `json:"totalPoolSize,omitempty"`
-	// LastPoolSize  int                      `json:"lastPoolSize,omitempty"`
-	poolSize int `json:"poolSize,omitempty"`
-	// poolContext   []*ServStatsContext      `json:"-"`
-	// lock          sync.Mutex               `json:"-"`
+	poolSize    int                      `json:"-"`
 }
 
 func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOutput string, poolSize int) *ServStats {
 	stats := &ServStats{
 		MapMsgs:     make(map[string]*ServStatsMsg),
 		MaxNodes:    maxNodes,
-		ChanCtx:     make(chan *ServStatsContext, chanSize),
 		ChanState:   make(chan int),
 		TimerOutput: time.NewTimer(outputTimer),
+		PathOutput:  pathOutput,
 		poolSize:    poolSize,
 	}
 
-	// stats.newPool()
-
 	return stats
 }
-
-// func (stats *ServStats) newPool() {
-// 	for i := 0; i < stats.PoolSize; i++ {
-// 		stats.poolContext = append(stats.poolContext, &ServStatsContext{
-// 			ID: len(stats.poolContext) + 1,
-// 		})
-// 	}
-
-// 	stats.TotalPoolSize += stats.PoolSize
-// }
 
 func (stats *ServStats) Start() {
 	go stats.mainLoop()
@@ -188,19 +153,6 @@ func (stats *ServStats) StartMsg(msgname string) *ServStatsMsgNode {
 	if isok {
 		return msg.startMsg()
 	}
-	// stats.lock.Lock()
-	// if len(stats.poolContext) <= 0 {
-	// 	stats.newPool()
-	// }
-
-	// ctx := stats.poolContext[len(stats.poolContext)-1]
-	// stats.poolContext = stats.poolContext[:(len(stats.poolContext) - 1)]
-	// stats.lock.Unlock()
-
-	// ctx.MsgName = msgname
-	// ctx.State = 0
-
-	// stats.ChanCtx <- ctx
 
 	return nil
 }
@@ -210,8 +162,6 @@ func (stats *ServStats) EndMsg(msgname string, node *ServStatsMsgNode) {
 	if isok {
 		msg.endMsg(node, stats.MaxNodes)
 	}
-	// ctx.State = 1
-	// stats.ChanCtx <- ctx
 }
 
 func (stats *ServStats) RegMsg(name string) {
@@ -253,42 +203,6 @@ func (stats *ServStats) output() {
 func (stats *ServStats) mainLoop() {
 	for {
 		select {
-		// case ctx := <-stats.ChanCtx:
-		// 	msg, isok := stats.MapMsgs[ctx.MsgName]
-		// 	if !isok {
-		// 		Error("ServStats:mainLoop:ChanStart",
-		// 			zap.String("msgname", ctx.MsgName),
-		// 			zap.Error(ErrInvalidMsgName))
-		// 	} else {
-		// 		if ctx.State == 0 {
-		// 			msg.startMsg(ctx)
-		// 		} else {
-		// 			msg.endMsg(ctx, stats.MaxNodes)
-
-		// 			stats.lock.Lock()
-		// 			stats.poolContext = append(stats.poolContext, ctx)
-		// 			stats.lock.Unlock()
-		// 		}
-		// 	}
-		// case ctx := <-stats.ChanEnd:
-		// 	// name, isok := ctx.Value(ServStatsMsgName).(string)
-		// 	// if !isok {
-		// 	// 	Error("ServStats:mainLoop:ChanEnd",
-		// 	// 		zap.Error(ErrNoMsgName))
-		// 	// }
-
-		// 	msg, isok := stats.MapMsgs[ctx.MsgName]
-		// 	if !isok {
-		// 		Error("ServStats:mainLoop:ChanEnd",
-		// 			zap.String("msgname", ctx.MsgName),
-		// 			zap.Error(ErrInvalidMsgName))
-		// 	}
-
-		// 	msg.endMsg(ctx, stats.MaxNodes)
-
-		// 	stats.lock.Lock()
-		// 	stats.poolContext = append(stats.poolContext, ctx)
-		// 	stats.lock.Unlock()
 		case <-stats.ChanState:
 			Info("ServStats:mainLoop:ChanState")
 
