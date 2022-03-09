@@ -118,22 +118,22 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 }
 
 type ServStats struct {
-	MapMsgs     map[string]*ServStatsMsg `json:"mapMsgs,omitempty"`
-	MaxNodes    int                      `json:"-"`
-	ChanState   chan int                 `json:"-"`
-	TimerOutput *time.Timer              `json:"-"`
-	PathOutput  string                   `json:"-"`
-	poolSize    int                      `json:"-"`
+	MapMsgs      map[string]*ServStatsMsg `json:"mapMsgs,omitempty"`
+	MaxNodes     int                      `json:"-"`
+	ChanState    chan int                 `json:"-"`
+	TickerOutput *time.Ticker             `json:"-"`
+	PathOutput   string                   `json:"-"`
+	poolSize     int                      `json:"-"`
 }
 
 func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOutput string, poolSize int) *ServStats {
 	stats := &ServStats{
-		MapMsgs:     make(map[string]*ServStatsMsg),
-		MaxNodes:    maxNodes,
-		ChanState:   make(chan int),
-		TimerOutput: time.NewTimer(outputTimer),
-		PathOutput:  pathOutput,
-		poolSize:    poolSize,
+		MapMsgs:      make(map[string]*ServStatsMsg),
+		MaxNodes:     maxNodes,
+		ChanState:    make(chan int),
+		TickerOutput: time.NewTicker(outputTimer),
+		PathOutput:   pathOutput,
+		poolSize:     poolSize,
 	}
 
 	return stats
@@ -144,7 +144,7 @@ func (stats *ServStats) Start() {
 }
 
 func (stats *ServStats) Stop() {
-	stats.TimerOutput.Stop()
+	stats.TickerOutput.Stop()
 	stats.ChanState <- 0
 }
 
@@ -207,7 +207,7 @@ func (stats *ServStats) mainLoop() {
 			Info("ServStats:mainLoop:ChanState")
 
 			return
-		case <-stats.TimerOutput.C:
+		case <-stats.TickerOutput.C:
 			stats.Output()
 		}
 	}
