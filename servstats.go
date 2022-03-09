@@ -30,7 +30,7 @@ type ServStatsMsg struct {
 	pool         sync.Pool `json:"-"`
 	// NoEndNodes   map[int]*ServStatsMsgNode `json:"noEndNodes,omitempty"`
 	// pool         []*ServStatsMsgNode       `json:"-"`
-	// lock         sync.Mutex                `json:"-"`
+	lock sync.Mutex `json:"-"`
 	// poolSize     int                       `json:"-"`
 	// curID        int                       `json:"-"`
 }
@@ -116,6 +116,7 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 	msg.TotalTime += dt
 	msg.TotalTimes++
 
+	msg.lock.Lock()
 	msg.Nodes = append(msg.Nodes, dt)
 	if len(msg.Nodes) > maxNodes*2 {
 		sort.Slice(msg.Nodes, func(i, j int) bool {
@@ -124,6 +125,7 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 
 		msg.Nodes = msg.Nodes[:maxNodes]
 	}
+	msg.lock.Unlock()
 
 	msg.pool.Put(node)
 
