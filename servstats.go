@@ -168,7 +168,7 @@ func (stats *ServStats) RegMsg(name string) {
 	stats.MapMsgs[name] = newServStatsMsg(name, stats.poolSize)
 }
 
-func (stats *ServStats) output() {
+func (stats *ServStats) Output() {
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
 
 	for _, v := range stats.MapMsgs {
@@ -208,7 +208,7 @@ func (stats *ServStats) mainLoop() {
 
 			return
 		case <-stats.TimerOutput.C:
-			stats.output()
+			stats.Output()
 		}
 	}
 }
