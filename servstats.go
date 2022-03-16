@@ -14,76 +14,38 @@ import (
 )
 
 type ServStatsMsgNode struct {
-	// ID    int
 	Start time.Time
 	End   time.Time
 }
 
 type ServStatsMsg struct {
-	Name         string    `json:"name,omitempty"`
-	TotalTime    float64   `json:"totalTime,omitempty"`
-	TotalTimes   int       `json:"totalTimes,omitempty"`
-	MaxTime      float64   `json:"maxTime,omitempty"`
-	MinTime      float64   `json:"minTime,omitempty"`
-	MaxParallels int       `json:"maxParallels,omitempty"`
-	Nodes        []float64 `json:"nodes,omitempty"`
-	pool         sync.Pool `json:"-"`
-	// NoEndNodes   map[int]*ServStatsMsgNode `json:"noEndNodes,omitempty"`
-	// pool         []*ServStatsMsgNode       `json:"-"`
-	lock sync.Mutex `json:"-"`
-	// poolSize     int                       `json:"-"`
-	// curID        int                       `json:"-"`
+	Name         string     `json:"name,omitempty"`
+	TotalTime    float64    `json:"totalTime,omitempty"`
+	TotalTimes   int        `json:"totalTimes,omitempty"`
+	MaxTime      float64    `json:"maxTime,omitempty"`
+	MinTime      float64    `json:"minTime,omitempty"`
+	MaxParallels int        `json:"maxParallels,omitempty"`
+	Nodes        []float64  `json:"nodes,omitempty"`
+	pool         sync.Pool  `json:"-"`
+	lock         sync.Mutex `json:"-"`
 }
 
 func newServStatsMsg(name string, poolSize int) *ServStatsMsg {
 	msg := &ServStatsMsg{
 		Name:    name,
 		MinTime: math.MaxFloat64,
-		// NoEndNodes: make(map[int]*ServStatsMsgNode),
-		// poolSize:   poolSize,
 	}
 
 	msg.pool = sync.Pool{
 		New: func() interface{} {
-			return &ServStatsMsgNode{
-				// ID: msg.curID,
-			}
+			return &ServStatsMsgNode{}
 		},
 	}
 
 	return msg
 }
 
-// func (msg *ServStatsMsg) _newNode() *ServStatsMsgNode {
-// 	if len(msg.pool) <= 0 {
-// 		for i := 0; i < msg.poolSize; i++ {
-// 			msg.curID++
-
-// 			msg.pool = append(msg.pool, &ServStatsMsgNode{
-// 				ID: msg.curID,
-// 			})
-// 		}
-// 	}
-
-// 	node := msg.pool[len(msg.pool)-1]
-// 	msg.pool = msg.pool[:(len(msg.pool) - 1)]
-// 	return node
-// }
-
 func (msg *ServStatsMsg) startMsg() *ServStatsMsgNode {
-	// msg.lock.Lock()
-	// n := msg._newNode()
-
-	// n.Start = time.Now()
-
-	// msg.NoEndNodes[n.ID] = n
-
-	// if len(msg.NoEndNodes) > msg.MaxParallels {
-	// 	msg.MaxParallels = len(msg.NoEndNodes)
-	// }
-
-	// msg.lock.Unlock()
-
 	n := msg.pool.Get().(*ServStatsMsgNode)
 	n.Start = time.Now()
 
@@ -91,17 +53,6 @@ func (msg *ServStatsMsg) startMsg() *ServStatsMsgNode {
 }
 
 func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
-	// msg.lock.Lock()
-	// _, isok := msg.NoEndNodes[node.ID]
-	// if !isok {
-	// 	Warn("ServStatsMsg:EndMsg",
-	// 		zap.Error(ErrNoMsgCtx))
-
-	// 	msg.lock.Unlock()
-
-	// 	return
-	// }
-
 	node.End = time.Now()
 
 	dt := node.End.Sub(node.Start).Seconds()
@@ -128,11 +79,6 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 	msg.lock.Unlock()
 
 	msg.pool.Put(node)
-
-	// delete(msg.NoEndNodes, node.ID)
-	// msg.pool = append(msg.pool, node)
-
-	// msg.lock.Unlock()
 }
 
 type ServStats struct {
@@ -142,9 +88,10 @@ type ServStats struct {
 	TickerOutput *time.Ticker             `json:"-"`
 	PathOutput   string                   `json:"-"`
 	poolSize     int                      `json:"-"`
+	prefixFN     string                   `json:"-"`
 }
 
-func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOutput string, poolSize int) *ServStats {
+func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOutput string, poolSize int, prefixFN string) *ServStats {
 	stats := &ServStats{
 		MapMsgs:      make(map[string]*ServStatsMsg),
 		MaxNodes:     maxNodes,
@@ -152,6 +99,7 @@ func NewServStats(maxNodes int, chanSize int, outputTimer time.Duration, pathOut
 		TickerOutput: time.NewTicker(outputTimer),
 		PathOutput:   pathOutput,
 		poolSize:     poolSize,
+		prefixFN:     prefixFN,
 	}
 
 	return stats
@@ -189,27 +137,15 @@ func (stats *ServStats) RegMsg(name string) {
 func (stats *ServStats) Output() {
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
 
-	// for _, v := range stats.MapMsgs {
-	// 	v.lock.Lock()
-	// }
-
 	b, err := json.Marshal(stats)
 	if err != nil {
 		Warn("ServStats.output:Marshal",
 			zap.Error(err))
 
-		// for _, v := range stats.MapMsgs {
-		// 	v.lock.Unlock()
-		// }
-
 		return
 	}
 
-	// for _, v := range stats.MapMsgs {
-	// 	v.lock.Unlock()
-	// }
-
-	err = os.WriteFile(path.Join(stats.PathOutput, fmt.Sprintf("%v.json", time.Now().Unix())), b, 0644)
+	err = os.WriteFile(path.Join(stats.PathOutput, fmt.Sprintf("%v.%v.json", stats.prefixFN, time.Now().Unix())), b, 0644)
 	if err != nil {
 		Warn("ServStats.output:WriteFile",
 			zap.Error(err))
