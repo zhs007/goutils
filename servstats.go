@@ -7,6 +7,7 @@ import (
 	"path"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -28,11 +29,13 @@ type ServStatsMsg struct {
 	Nodes        []float64  `json:"nodes,omitempty"`
 	pool         sync.Pool  `json:"-"`
 	lock         sync.Mutex `json:"-"`
+	msgNums      int32      `json:"-"`
 }
 
 func newServStatsMsg(name string, poolSize int) *ServStatsMsg {
 	msg := &ServStatsMsg{
 		Name:    name,
+		MaxTime: 0,
 		MinTime: math.MaxFloat64,
 	}
 
@@ -46,6 +49,11 @@ func newServStatsMsg(name string, poolSize int) *ServStatsMsg {
 }
 
 func (msg *ServStatsMsg) startMsg() *ServStatsMsgNode {
+	nn := atomic.AddInt32(&msg.msgNums, 1)
+	if nn > int32(msg.MaxParallels) {
+		msg.MaxParallels = int(nn)
+	}
+
 	n := msg.pool.Get().(*ServStatsMsgNode)
 	n.Start = time.Now()
 
@@ -79,6 +87,8 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 	msg.lock.Unlock()
 
 	msg.pool.Put(node)
+
+	atomic.AddInt32(&msg.msgNums, -1)
 }
 
 type ServStats struct {
