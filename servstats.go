@@ -7,7 +7,6 @@ import (
 	"path"
 	"sort"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -29,7 +28,7 @@ type ServStatsMsg struct {
 	Nodes        []float64  `json:"nodes,omitempty"`
 	pool         sync.Pool  `json:"-"`
 	lock         sync.Mutex `json:"-"`
-	msgNums      int32      `json:"-"`
+	LastMsgNums  int        `json:"lastMsgNums"`
 }
 
 func newServStatsMsg(name string, poolSize int) *ServStatsMsg {
@@ -49,10 +48,12 @@ func newServStatsMsg(name string, poolSize int) *ServStatsMsg {
 }
 
 func (msg *ServStatsMsg) startMsg() *ServStatsMsgNode {
-	nn := atomic.AddInt32(&msg.msgNums, 1)
-	if nn > int32(msg.MaxParallels) {
-		msg.MaxParallels = int(nn)
+	msg.lock.Lock()
+	msg.LastMsgNums++
+	if msg.LastMsgNums > msg.MaxParallels {
+		msg.MaxParallels = msg.LastMsgNums
 	}
+	msg.lock.Unlock()
 
 	n := msg.pool.Get().(*ServStatsMsgNode)
 	n.Start = time.Now()
@@ -60,10 +61,23 @@ func (msg *ServStatsMsg) startMsg() *ServStatsMsgNode {
 	return n
 }
 
+func (msg *ServStatsMsg) sort() {
+	msg.lock.Lock()
+
+	sort.Slice(msg.Nodes, func(i, j int) bool {
+		return msg.Nodes[i] > msg.Nodes[j]
+	})
+
+	msg.lock.Unlock()
+}
+
 func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 	node.End = time.Now()
 
 	dt := node.End.Sub(node.Start).Seconds()
+
+	msg.lock.Lock()
+
 	if dt > msg.MaxTime {
 		msg.MaxTime = dt
 	}
@@ -75,7 +89,6 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 	msg.TotalTime += dt
 	msg.TotalTimes++
 
-	msg.lock.Lock()
 	msg.Nodes = append(msg.Nodes, dt)
 	if len(msg.Nodes) > maxNodes*2 {
 		sort.Slice(msg.Nodes, func(i, j int) bool {
@@ -84,11 +97,12 @@ func (msg *ServStatsMsg) endMsg(node *ServStatsMsgNode, maxNodes int) {
 
 		msg.Nodes = msg.Nodes[:maxNodes]
 	}
+
+	msg.LastMsgNums--
+
 	msg.lock.Unlock()
 
 	msg.pool.Put(node)
-
-	atomic.AddInt32(&msg.msgNums, -1)
 }
 
 type ServStats struct {
@@ -146,6 +160,10 @@ func (stats *ServStats) RegMsg(name string) {
 
 func (stats *ServStats) Output() {
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
+
+	for _, v := range stats.MapMsgs {
+		v.sort()
+	}
 
 	b, err := json.Marshal(stats)
 	if err != nil {
