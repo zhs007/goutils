@@ -26,7 +26,7 @@ func newSenderStatsNode(name string) *SenderStatsNode {
 	msg := &SenderStatsNode{
 		Name:     name,
 		MaxBytes: 0,
-		MinBytes: math.MaxInt,
+		MinBytes: math.MaxInt32,
 	}
 
 	return msg
