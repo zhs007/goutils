@@ -99,11 +99,10 @@ func (stats *SenderStats) Push(name string, bytes int) {
 	node, isok := stats.MapNodes[name]
 	if isok {
 		node.push(bytes, stats.MaxNodes)
+	} else {
+		stats.MapNodes[name] = newSenderStatsNode(name)
+		stats.MapNodes[name].push(bytes, stats.MaxNodes)
 	}
-}
-
-func (stats *SenderStats) RegNodes(name string) {
-	stats.MapNodes[name] = newSenderStatsNode(name)
 }
 
 func (stats *SenderStats) Output() {

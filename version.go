@@ -1,4 +1,4 @@
 package goutils
 
 // Version -
-const Version = "v0.1.41"
+const Version = "v0.1.42"
