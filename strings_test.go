@@ -58,3 +58,46 @@ func Test_String2Float64(t *testing.T) {
 
 	t.Logf("Test_String2Float64 OK")
 }
+
+func Test_Int2StringWithArr(t *testing.T) {
+	str := Int2StringWithArr(0, "abc")
+	assert.Equal(t, str, "a")
+
+	str = Int2StringWithArr(1, "abc")
+	assert.Equal(t, str, "b")
+
+	str = Int2StringWithArr(2, "abc")
+	assert.Equal(t, str, "c")
+
+	str = Int2StringWithArr(3, "abc")
+	assert.Equal(t, str, "aa")
+
+	str = Int2StringWithArr(4, "abc")
+	assert.Equal(t, str, "ab")
+
+	str = Int2StringWithArr(5, "abc")
+	assert.Equal(t, str, "ac")
+
+	str = Int2StringWithArr(6, "abc")
+	assert.Equal(t, str, "ba")
+
+	str = Int2StringWithArr(7, "abc")
+	assert.Equal(t, str, "bb")
+
+	str = Int2StringWithArr(8, "abc")
+	assert.Equal(t, str, "bc")
+
+	str = Int2StringWithArr(9, "abc")
+	assert.Equal(t, str, "ca")
+
+	str = Int2StringWithArr(10, "abc")
+	assert.Equal(t, str, "cb")
+
+	str = Int2StringWithArr(11, "abc")
+	assert.Equal(t, str, "cc")
+
+	str = Int2StringWithArr(12, "abc")
+	assert.Equal(t, str, "aaa")
+
+	t.Logf("Test_Int2StringWithArr OK")
+}

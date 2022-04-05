@@ -54,3 +54,20 @@ func String2Float64(str string) (float64, error) {
 
 	// return , nil
 }
+
+// (0, "abc") => "a", (1, "abc") => "b", (3, "abc") => "aa"
+func Int2StringWithArr(val int, arr string) string {
+	str := ""
+
+	for val >= len(arr) {
+		t := val % len(arr)
+
+		str = arr[t:t+1] + str
+
+		val = val/len(arr) - 1
+	}
+
+	str = arr[val:val+1] + str
+
+	return str
+}
