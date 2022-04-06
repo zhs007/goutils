@@ -21,4 +21,7 @@ var (
 	ErrInvalidMsgName = errors.New("invalid MsgName")
 	// ErrNoMsgName - no MsgName
 	ErrNoMsgName = errors.New("no MsgName")
+
+	// ErrInvalidNameInMapWeights - invalid Name in MapWeights
+	ErrInvalidNameInMapWeights = errors.New("invalid Name in MapWeights")
 )
