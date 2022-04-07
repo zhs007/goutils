@@ -18,6 +18,17 @@ func NewMapWeights() *MapWeights {
 	}
 }
 
+func (mapWeights *MapWeights) SetDefaultIsMaxWeight() {
+	maxw := 0
+	for k, v := range mapWeights.MapWeights {
+		if v > maxw {
+			maxw = v
+
+			mapWeights.DefaultName = k
+		}
+	}
+}
+
 func (mapWeights *MapWeights) AddWeight(name string, weight int, isDefault bool) error {
 	_, isok := mapWeights.MapWeights[name]
 	if isok {
