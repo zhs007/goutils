@@ -233,3 +233,16 @@ func IsSameIntArr2Ex(arr0 [][]int, arr1 [][]int32) bool {
 
 	return false
 }
+
+// CloneIntArr - clone a []int
+func CloneIntArr(arr []int) []int {
+	if len(arr) == 0 {
+		return nil
+	}
+
+	rarr := make([]int, len(arr))
+
+	copy(rarr, arr)
+
+	return rarr
+}
