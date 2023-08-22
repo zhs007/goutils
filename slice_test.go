@@ -116,3 +116,25 @@ func Test_Int3Arr2ToInt4Arr2(t *testing.T) {
 
 	t.Logf("Test_Int3Arr2ToInt4Arr2 OK")
 }
+
+func Test_CloneIntArr(t *testing.T) {
+
+	in := []int{1, 2, 3}
+
+	out := CloneIntArr(in)
+
+	assert.Equal(t, len(out), len(in))
+	assert.Equal(t, out[0], in[0])
+	assert.Equal(t, out[1], in[1])
+	assert.Equal(t, out[2], in[2])
+
+	in[0] = 5
+	assert.Equal(t, out[0], 1)
+	assert.Equal(t, in[0], 5)
+
+	out[2] = 6
+	assert.Equal(t, out[2], 6)
+	assert.Equal(t, in[2], 3)
+
+	t.Logf("Test_CloneIntArr OK")
+}
