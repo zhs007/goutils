@@ -15,8 +15,8 @@ import (
 var logger *zap.Logger
 var onceLogger sync.Once
 var logPath string
+var lockNewLogger sync.Mutex
 
-// var panicFile *os.File
 var logSubName string
 
 func initPanicFile() error {
@@ -152,10 +152,28 @@ func InitLogger(logname string, appVersion string, level string, isConsole bool,
 			os.Exit(-1)
 		}
 
+		lockNewLogger.Lock()
+		defer lockNewLogger.Unlock()
+
 		logger = cl
 	})
 
 	// return
+}
+
+// ReInitLogger - initializes a thread-safe singleton logger
+func ReInitLogger(logname string, appVersion string, level string, isConsole bool, logpath string) {
+	cl, err := initLogger(logname, appVersion, level, isConsole, logpath)
+	if err != nil {
+		fmt.Printf("initLogger error! %v \n", err)
+
+		os.Exit(-1)
+	}
+
+	lockNewLogger.Lock()
+	defer lockNewLogger.Unlock()
+
+	logger = cl
 }
 
 // // Log a message at the given level with given fields
