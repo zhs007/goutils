@@ -1,6 +1,6 @@
 package goutils
 
-import "go.uber.org/zap"
+import "log/slog"
 
 // Int32ArrToIntArr2 - []int32 to [][]int
 func Int32ArrToIntArr2(arr []int32, x, y int) ([][]int, error) {
@@ -8,10 +8,10 @@ func Int32ArrToIntArr2(arr []int32, x, y int) ([][]int, error) {
 
 	if len(arr) != x*y {
 		Error("Int32ArrToIntArr2",
-			zap.Int("len", len(arr)),
-			zap.Int("x", x),
-			zap.Int("y", y),
-			zap.Error(ErrInvalidArrayLength))
+			slog.Int("len", len(arr)),
+			slog.Int("x", x),
+			slog.Int("y", y),
+			Err(ErrInvalidArrayLength))
 
 		return nil, ErrInvalidArrayLength
 	}
@@ -48,11 +48,11 @@ func Int32ArrToIntArr3(arr []int32, x, y, z int) ([][][]int, error) {
 
 	if len(arr) != x*y*z {
 		Error("Int32ArrToIntArr3",
-			zap.Int("len", len(arr)),
-			zap.Int("x", x),
-			zap.Int("y", y),
-			zap.Int("z", z),
-			zap.Error(ErrInvalidArrayLength))
+			slog.Int("len", len(arr)),
+			slog.Int("x", x),
+			slog.Int("y", y),
+			slog.Int("z", z),
+			Err(ErrInvalidArrayLength))
 
 		return nil, ErrInvalidArrayLength
 	}

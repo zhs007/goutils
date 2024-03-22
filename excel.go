@@ -1,8 +1,9 @@
 package goutils
 
 import (
+	"log/slog"
+
 	"github.com/xuri/excelize/v2"
-	"go.uber.org/zap"
 )
 
 type FuncProcHeader func(x int, str string) string
@@ -12,8 +13,8 @@ func LoadExcel(fn string, sheet string, onheader FuncProcHeader, ondata FuncProc
 	f, err := excelize.OpenFile(fn)
 	if err != nil {
 		Error("LoadExcel:OpenFile",
-			zap.String("fn", fn),
-			zap.Error(err))
+			slog.String("fn", fn),
+			Err(err))
 
 		return err
 	}
@@ -26,8 +27,8 @@ func LoadExcel(fn string, sheet string, onheader FuncProcHeader, ondata FuncProc
 	rows, err := f.GetRows(sheet)
 	if err != nil {
 		Error("LoadExcel:GetRows",
-			zap.String("fn", fn),
-			zap.Error(err))
+			slog.String("fn", fn),
+			Err(err))
 
 		return err
 	}
@@ -46,11 +47,11 @@ func LoadExcel(fn string, sheet string, onheader FuncProcHeader, ondata FuncProc
 					err := ondata(x, y, colname, colCell)
 					if err != nil {
 						Error("LoadExcel:ondata",
-							zap.Int("x", x),
-							zap.Int("y", y),
-							zap.String("header", colname),
-							zap.String("val", colCell),
-							zap.Error(err))
+							slog.Int("x", x),
+							slog.Int("y", y),
+							slog.String("header", colname),
+							slog.String("val", colCell),
+							Err(err))
 
 						return err
 					}

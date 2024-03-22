@@ -3,9 +3,8 @@ package goutils
 import (
 	"encoding/csv"
 	"io"
+	"log/slog"
 	"os"
-
-	"go.uber.org/zap"
 )
 
 type FuncIsCSVHeadRow func(i int, row []string) bool
@@ -15,7 +14,7 @@ func LoadCSVFile(fn string, funcIsHeadRow FuncIsCSVHeadRow, funcProcCSVRow FuncP
 	csvFile, err := os.Open(fn)
 	if err != nil {
 		Error("LoadCSVFile:Open",
-			zap.Error(err))
+			Err(err))
 
 		return err
 	}
@@ -30,8 +29,8 @@ func LoadCSVFile(fn string, funcIsHeadRow FuncIsCSVHeadRow, funcProcCSVRow FuncP
 			break
 		} else if err != nil {
 			Error("LoadCSVFile:Read",
-				zap.Int("i", i),
-				zap.Error(err))
+				slog.Int("i", i),
+				Err(err))
 
 			return err
 		}
@@ -44,8 +43,8 @@ func LoadCSVFile(fn string, funcIsHeadRow FuncIsCSVHeadRow, funcProcCSVRow FuncP
 			err = funcProcCSVRow(i, row, header)
 			if err != nil {
 				Error("LoadCSVFile:funcProcCSVRow",
-					zap.Int("i", i),
-					zap.Error(err))
+					slog.Int("i", i),
+					Err(err))
 
 				return err
 			}

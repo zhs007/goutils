@@ -10,7 +10,6 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 type SenderStatsNode struct {
@@ -118,7 +117,7 @@ func (stats *SenderStats) Output() {
 		stats.lock.Unlock()
 
 		Warn("SenderStats.output:Marshal",
-			zap.Error(err))
+			Err(err))
 
 		return
 	}
@@ -127,7 +126,7 @@ func (stats *SenderStats) Output() {
 	err = os.WriteFile(path.Join(stats.PathOutput, fmt.Sprintf("%v.%v.json", stats.prefixFN, time.Now().Unix())), b, 0644)
 	if err != nil {
 		Warn("SenderStats.output:WriteFile",
-			zap.Error(err))
+			Err(err))
 
 		return
 	}

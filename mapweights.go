@@ -1,9 +1,8 @@
 package goutils
 
 import (
+	"log/slog"
 	"math/rand"
-
-	"go.uber.org/zap"
 )
 
 type MapWeights struct {
@@ -33,8 +32,8 @@ func (mapWeights *MapWeights) AddWeight(name string, weight int, isDefault bool)
 	_, isok := mapWeights.MapWeights[name]
 	if isok {
 		Error("MapWeights.AddWeight",
-			zap.String("name", name),
-			zap.Error(ErrInvalidNameInMapWeights))
+			slog.String("name", name),
+			Err(ErrInvalidNameInMapWeights))
 
 		return ErrInvalidNameInMapWeights
 	}
@@ -61,7 +60,7 @@ func (mapWeights *MapWeights) Rand() string {
 	}
 
 	Error("MapWeights.Rand",
-		zap.Int("cr", cr))
+		slog.Int("cr", cr))
 
 	return mapWeights.DefaultName
 }

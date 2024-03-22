@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log/slog"
 	"strings"
 	"text/template"
-
-	"go.uber.org/zap"
 )
 
 type VersionObj struct {
@@ -36,7 +35,7 @@ func LoadVersion(fn string) (string, error) {
 func ParseVersion(str string) (*VersionObj, error) {
 	if str[0:1] != "v" && str[0:1] != "V" {
 		Warn("ParseVersion",
-			zap.String("str", str))
+			slog.String("str", str))
 
 		return nil, ErrInvalidVersion
 	}
@@ -44,7 +43,7 @@ func ParseVersion(str string) (*VersionObj, error) {
 	arr := strings.Split(str[1:], ".")
 	if len(arr) != 3 {
 		Warn("ParseVersion:Split",
-			zap.String("str", str))
+			slog.String("str", str))
 
 		return nil, ErrInvalidVersion
 	}
@@ -52,7 +51,7 @@ func ParseVersion(str string) (*VersionObj, error) {
 	v0, err := String2Int64(arr[0])
 	if err != nil {
 		Warn("ParseVersion:String2Int64:arr0",
-			zap.String("str", str))
+			slog.String("str", str))
 
 		return nil, ErrInvalidVersion
 	}
@@ -60,7 +59,7 @@ func ParseVersion(str string) (*VersionObj, error) {
 	v1, err := String2Int64(arr[1])
 	if err != nil {
 		Warn("ParseVersion:String2Int64:arr1",
-			zap.String("str", str))
+			slog.String("str", str))
 
 		return nil, ErrInvalidVersion
 	}
@@ -68,7 +67,7 @@ func ParseVersion(str string) (*VersionObj, error) {
 	v2, err := String2Int64(arr[2])
 	if err != nil {
 		Warn("ParseVersion:String2Int64:arr2",
-			zap.String("str", str))
+			slog.String("str", str))
 
 		return nil, ErrInvalidVersion
 	}
@@ -84,7 +83,7 @@ func BuildVersionFile(fn string, tmpfn string, vobj *VersionObj) error {
 	data, err := ioutil.ReadFile(tmpfn)
 	if err != nil {
 		Warn("BuildVersionFile:ReadFile",
-			zap.String("tmpfn", tmpfn))
+			slog.String("tmpfn", tmpfn))
 
 		return err
 	}
@@ -94,8 +93,8 @@ func BuildVersionFile(fn string, tmpfn string, vobj *VersionObj) error {
 	t, err := template.New("buildversion").Parse(string(data))
 	if err != nil {
 		Warn("BuildVersionFile:template.New",
-			zap.String("tmpfn", tmpfn),
-			zap.Error(err))
+			slog.String("tmpfn", tmpfn),
+			Err(err))
 
 		return err
 	}
@@ -103,9 +102,9 @@ func BuildVersionFile(fn string, tmpfn string, vobj *VersionObj) error {
 	err = t.Execute(buf, vobj)
 	if err != nil {
 		Warn("BuildVersionFile:Execute",
-			zap.String("tmpfn", tmpfn),
-			zap.String("version", vobj.ToString()),
-			zap.Error(err))
+			slog.String("tmpfn", tmpfn),
+			slog.String("version", vobj.ToString()),
+			Err(err))
 
 		return err
 	}
@@ -113,8 +112,8 @@ func BuildVersionFile(fn string, tmpfn string, vobj *VersionObj) error {
 	err = ioutil.WriteFile(fn, buf.Bytes(), 0644)
 	if err != nil {
 		Warn("BuildVersionFile:WriteFile",
-			zap.String("fn", fn),
-			zap.Error(err))
+			slog.String("fn", fn),
+			Err(err))
 
 		return err
 	}

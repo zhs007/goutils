@@ -2,10 +2,10 @@ package goutils
 
 import (
 	"bytes"
+	"log/slog"
 	"strings"
 
 	"github.com/buger/jsonparser"
-	"go.uber.org/zap"
 )
 
 func HasJsonKey(data []byte, keys ...string) bool {
@@ -292,9 +292,9 @@ func GetJsonIntArr(data []byte, keys ...string) ([]int, error) {
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonIntArr:ArrayEach:func",
-					zap.Strings("keys", keys),
-					zap.Int("offset", offset1),
-					zap.Error(err1))
+					slog.Any("keys", keys),
+					slog.Int("offset", offset1),
+					Err(err1))
 
 				return
 			}
@@ -305,8 +305,8 @@ func GetJsonIntArr(data []byte, keys ...string) ([]int, error) {
 		cv, err2 := GetJsonArrayEachInt(value1, dataType1, offset1, err1)
 		if err2 != nil {
 			Error("GetJsonIntArr:ArrayEach:func:GetJsonArrayEachInt",
-				zap.Int("offset", offset1),
-				zap.Error(err2))
+				slog.Int("offset", offset1),
+				Err(err2))
 
 			return
 		}
@@ -316,8 +316,8 @@ func GetJsonIntArr(data []byte, keys ...string) ([]int, error) {
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr:ArrayEach",
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -335,9 +335,9 @@ func GetJsonInt64Arr(data []byte, keys ...string) ([]int64, error) {
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonInt64Arr:ArrayEach:func",
-					zap.Strings("keys", keys),
-					zap.Int("offset", offset1),
-					zap.Error(err1))
+					slog.Any("keys", keys),
+					slog.Int("offset", offset1),
+					Err(err1))
 
 				return
 			}
@@ -348,8 +348,8 @@ func GetJsonInt64Arr(data []byte, keys ...string) ([]int64, error) {
 		cv, err2 := GetJsonArrayEachInt(value1, dataType1, offset1, err1)
 		if err2 != nil {
 			Error("GetJsonInt64Arr:ArrayEach:func:GetJsonArrayEachInt",
-				zap.Int("offset", offset1),
-				zap.Error(err2))
+				slog.Int("offset", offset1),
+				Err(err2))
 
 			return
 		}
@@ -359,8 +359,8 @@ func GetJsonInt64Arr(data []byte, keys ...string) ([]int64, error) {
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonInt64Arr:ArrayEach",
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -376,9 +376,9 @@ func GetJsonObjectArr(data []byte, cb func(value []byte, dataType jsonparser.Val
 		if err1 != nil {
 			if err1 != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonObjectArr:ArrayEach:func",
-					zap.Strings("keys", keys),
-					zap.Int("offset", offset1),
-					zap.Error(err1))
+					slog.Any("keys", keys),
+					slog.Int("offset", offset1),
+					Err(err1))
 
 				return
 			}
@@ -391,8 +391,8 @@ func GetJsonObjectArr(data []byte, cb func(value []byte, dataType jsonparser.Val
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonObjectArr:ArrayEach",
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Int("offset", offset),
+				Err(err))
 
 			return err
 		}
@@ -408,8 +408,8 @@ func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 		if err != nil {
 			if err != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonIntArr2:ArrayEach:func",
-					zap.Int("offset", offset),
-					zap.Error(err))
+					slog.Int("offset", offset),
+					Err(err))
 
 				return
 			}
@@ -422,8 +422,8 @@ func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 				if err2 != nil {
 					if err != jsonparser.KeyPathNotFoundError {
 						Error("GetJsonIntArr2:ArrayEach:func2",
-							zap.Int("offset", offset2),
-							zap.Error(err2))
+							slog.Int("offset", offset2),
+							Err(err2))
 
 						return
 					}
@@ -432,8 +432,8 @@ func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 				cv, err5 := GetJsonArrayEachInt(value2, dataType2, offset2, err2)
 				if err5 != nil {
 					Error("GetJsonIntArr2:ArrayEach:func2:GetJsonArrayEachInt",
-						zap.Int("offset", offset2),
-						zap.Error(err2))
+						slog.Int("offset", offset2),
+						Err(err2))
 
 					return
 				}
@@ -442,8 +442,8 @@ func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 			})
 			if err3 != nil {
 				Error("GetJsonIntArr2:ArrayEach:func:ArrayEach",
-					zap.Int("offset", offset3),
-					zap.Error(err3))
+					slog.Int("offset", offset3),
+					Err(err3))
 
 				return
 			}
@@ -454,15 +454,15 @@ func GetJsonIntArr2(data []byte, keys ...string) ([][]int, error) {
 		}
 
 		Error("GetJsonIntArr2:ArrayEach:func:dataType",
-			zap.Int("offset", offset),
-			zap.String("dataType", dataType.String()))
+			slog.Int("offset", offset),
+			slog.String("dataType", dataType.String()))
 	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr2:ArrayEach",
-				zap.Strings("keys", keys),
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Any("keys", keys),
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -482,8 +482,8 @@ func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 		if err != nil {
 			if err != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonInt64Arr2:ArrayEach:func",
-					zap.Int("offset", offset),
-					zap.Error(err))
+					slog.Int("offset", offset),
+					Err(err))
 
 				return
 			}
@@ -496,8 +496,8 @@ func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 				if err2 != nil {
 					if err != jsonparser.KeyPathNotFoundError {
 						Error("GetJsonInt64Arr2:ArrayEach:func2",
-							zap.Int("offset", offset2),
-							zap.Error(err2))
+							slog.Int("offset", offset2),
+							Err(err2))
 
 						return
 					}
@@ -506,8 +506,8 @@ func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 				cv, err5 := GetJsonArrayEachInt(value2, dataType2, offset2, err2)
 				if err5 != nil {
 					Error("GetJsonInt64Arr2:ArrayEach:func2:GetJsonArrayEachInt",
-						zap.Int("offset", offset2),
-						zap.Error(err2))
+						slog.Int("offset", offset2),
+						Err(err5))
 
 					return
 				}
@@ -516,8 +516,8 @@ func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 			})
 			if err3 != nil {
 				Error("GetJsonInt64Arr2:ArrayEach:func:ArrayEach",
-					zap.Int("offset", offset3),
-					zap.Error(err3))
+					slog.Int("offset", offset3),
+					Err(err3))
 
 				return
 			}
@@ -528,15 +528,15 @@ func GetJsonInt64Arr2(data []byte, keys ...string) ([][]int64, error) {
 		}
 
 		Error("GetJsonInt64Arr2:ArrayEach:func:dataType",
-			zap.Int("offset", offset),
-			zap.String("dataType", dataType.String()))
+			slog.Int("offset", offset),
+			slog.String("dataType", dataType.String()))
 	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonInt64Arr2:ArrayEach",
-				zap.Strings("keys", keys),
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Any("keys", keys),
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -556,8 +556,8 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 		if err != nil {
 			if err != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonIntArr3:ArrayEach:func",
-					zap.Int("offset", offset),
-					zap.Error(err))
+					slog.Int("offset", offset),
+					Err(err))
 
 				return
 			}
@@ -570,8 +570,8 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 				if err2 != nil {
 					if err != jsonparser.KeyPathNotFoundError {
 						Error("GetJsonIntArr3:ArrayEach:func2",
-							zap.Int("offset", offset2),
-							zap.Error(err2))
+							slog.Int("offset", offset2),
+							Err(err2))
 
 						return
 					}
@@ -584,8 +584,8 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 						if err5 != nil {
 							if err != jsonparser.KeyPathNotFoundError {
 								Error("GetJsonIntArr3:ArrayEach:func3",
-									zap.Int("offset", offset5),
-									zap.Error(err5))
+									slog.Int("offset", offset5),
+									Err(err5))
 
 								return
 							}
@@ -594,8 +594,8 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 						cv, err7 := GetJsonArrayEachInt(value5, dataType5, offset5, err5)
 						if err7 != nil {
 							Error("GetJsonIntArr3:ArrayEach:func3:GetJsonArrayEachInt",
-								zap.Int("offset", offset5),
-								zap.Error(err5))
+								slog.Int("offset", offset5),
+								Err(err5))
 
 							return
 						}
@@ -604,8 +604,8 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 					})
 					if err6 != nil {
 						Error("GetJsonIntArr3:ArrayEach:func2:ArrayEach",
-							zap.Int("offset", offset6),
-							zap.Error(err6))
+							slog.Int("offset", offset6),
+							Err(err6))
 
 						return
 					}
@@ -616,13 +616,13 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 				}
 
 				Error("GetJsonIntArr3:ArrayEach:func2:dataType",
-					zap.Int("offset", offset2),
-					zap.String("dataType", dataType2.String()))
+					slog.Int("offset", offset2),
+					slog.String("dataType", dataType2.String()))
 			})
 			if err3 != nil {
 				Error("GetJsonIntArr3:ArrayEach:func:ArrayEach",
-					zap.Int("offset", offset3),
-					zap.Error(err3))
+					slog.Int("offset", offset3),
+					Err(err3))
 
 				return
 			}
@@ -633,15 +633,15 @@ func GetJsonIntArr3(data []byte, keys ...string) ([][][]int, error) {
 		}
 
 		Error("GetJsonIntArr3:ArrayEach:func:dataType",
-			zap.Int("offset", offset),
-			zap.String("dataType", dataType.String()))
+			slog.Int("offset", offset),
+			slog.String("dataType", dataType.String()))
 	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr3:ArrayEach",
-				zap.Strings("keys", keys),
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Any("keys", keys),
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -661,8 +661,8 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 		if err != nil {
 			if err != jsonparser.KeyPathNotFoundError {
 				Error("GetJsonIntArr3:ArrayEach:func",
-					zap.Int("offset", offset),
-					zap.Error(err))
+					slog.Int("offset", offset),
+					Err(err))
 
 				return
 			}
@@ -675,8 +675,8 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 				if err2 != nil {
 					if err != jsonparser.KeyPathNotFoundError {
 						Error("GetJsonIntArr3:ArrayEach:func2",
-							zap.Int("offset", offset2),
-							zap.Error(err2))
+							slog.Int("offset", offset2),
+							Err(err2))
 
 						return
 					}
@@ -689,8 +689,8 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 						if err5 != nil {
 							if err != jsonparser.KeyPathNotFoundError {
 								Error("GetJsonIntArr3:ArrayEach:func3",
-									zap.Int("offset", offset5),
-									zap.Error(err5))
+									slog.Int("offset", offset5),
+									Err(err5))
 
 								return
 							}
@@ -699,8 +699,8 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 						cv, err7 := GetJsonArrayEachInt(value5, dataType5, offset5, err5)
 						if err7 != nil {
 							Error("GetJsonIntArr3:ArrayEach:func3:GetJsonArrayEachInt",
-								zap.Int("offset", offset5),
-								zap.Error(err5))
+								slog.Int("offset", offset5),
+								Err(err5))
 
 							return
 						}
@@ -709,8 +709,8 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 					})
 					if err6 != nil {
 						Error("GetJsonIntArr3:ArrayEach:func2:ArrayEach",
-							zap.Int("offset", offset6),
-							zap.Error(err6))
+							slog.Int("offset", offset6),
+							Err(err6))
 
 						return
 					}
@@ -721,13 +721,13 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 				}
 
 				Error("GetJsonIntArr3:ArrayEach:func2:dataType",
-					zap.Int("offset", offset2),
-					zap.String("dataType", dataType2.String()))
+					slog.Int("offset", offset2),
+					slog.String("dataType", dataType2.String()))
 			})
 			if err3 != nil {
 				Error("GetJsonIntArr3:ArrayEach:func:ArrayEach",
-					zap.Int("offset", offset3),
-					zap.Error(err3))
+					slog.Int("offset", offset3),
+					Err(err3))
 
 				return
 			}
@@ -738,15 +738,15 @@ func GetJsonInt64Arr3(data []byte, keys ...string) ([][][]int64, error) {
 		}
 
 		Error("GetJsonIntArr3:ArrayEach:func:dataType",
-			zap.Int("offset", offset),
-			zap.String("dataType", dataType.String()))
+			slog.Int("offset", offset),
+			slog.String("dataType", dataType.String()))
 	}, keys...)
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonIntArr3:ArrayEach",
-				zap.Strings("keys", keys),
-				zap.Int("offset", offset),
-				zap.Error(err))
+				slog.Any("keys", keys),
+				slog.Int("offset", offset),
+				Err(err))
 
 			return nil, err
 		}
@@ -766,7 +766,7 @@ func GetJsonObject(data []byte,
 	if err != nil {
 		if err != jsonparser.KeyPathNotFoundError {
 			Error("GetJsonObject:ObjectEach",
-				zap.Error(err))
+				Err(err))
 
 			return err
 		}
